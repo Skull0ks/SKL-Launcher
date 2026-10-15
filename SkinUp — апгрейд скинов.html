@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SkinUp — апгрейд скинов</title>
+<style>
+:root{--bg:#0c0f1a;--panel:#151a2b;--line:#252c45;--text:#e8ecff;--mut:#8791b8;--acc:#27e0b3;--acc2:#7c5cff;--bad:#ff5a6e;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Segoe UI",system-ui,Roboto,sans-serif;line-height:1.45}
+button{font:inherit;cursor:pointer;border:0;color:inherit}
+button:focus-visible,input:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+header{display:flex;align-items:center;gap:16px;padding:14px 24px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.logo{font-weight:800;font-size:22px;letter-spacing:-.5px}.logo span{color:var(--acc)}
+.sp{flex:1}
+.bal{background:var(--panel);border:1px solid var(--line);padding:8px 14px;border-radius:10px;font-weight:700}
+.bal b{color:var(--acc)}
+.steam{background:#1b2838;border:1px solid #3a516b;padding:9px 16px;border-radius:10px;font-weight:600;display:flex;gap:8px;align-items:center}
+.steam:hover{background:#243447}
+.user{display:flex;gap:10px;align-items:center}
+.ava{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--acc2),var(--acc));display:grid;place-items:center;font-weight:800}
+.lnk{background:none;color:var(--mut);text-decoration:underline}
+main{max-width:1180px;margin:0 auto;padding:24px;display:grid;grid-template-columns:1fr 360px 1fr;gap:20px}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;min-width:0}
+h2{margin:0 0 4px;font-size:17px}.sub{color:var(--mut);font-size:13px;margin:0 0 12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px;max-height:460px;overflow:auto}
+.sk{background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:10px;text-align:left;border-bottom:3px solid var(--c)}
+.sk:hover{border-color:var(--mut)}
+.sk.on{border-color:var(--acc);background:#10261f}
+.sk i{display:block;height:44px;border-radius:6px;margin-bottom:8px;background:linear-gradient(135deg,var(--c),#0006)}
+.sk small{display:block;color:var(--mut);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sk b{font-size:14px}
+.empty{color:var(--mut);padding:24px 8px;text-align:center;grid-column:1/-1}
+.center{text-align:center}
+.wheel{position:relative;width:300px;max-width:100%;aspect-ratio:1;margin:8px auto}
+.wheel svg{width:100%;height:100%}
+.ptr{transform-origin:150px 150px;transform:rotate(180deg)}
+.mute{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:16px}
+.mid{position:absolute;inset:0;display:grid;place-content:center}
+.mid b{font-size:44px;line-height:1}.mid span{color:var(--mut);font-size:13px}
+.info{display:flex;justify-content:space-between;font-size:14px;color:var(--mut);margin:6px 0}
+.info b{color:var(--text)}
+.quick{display:flex;gap:8px;justify-content:center;margin:4px 0 10px}
+.quick button{flex:1;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 0;font-weight:700}
+.quick button:hover{border-color:var(--acc);color:var(--acc)}
+.quick button:disabled{opacity:.4;cursor:not-allowed}
+.go{width:100%;margin-top:12px;padding:14px;border-radius:12px;font-weight:800;font-size:16px;background:linear-gradient(90deg,var(--acc),var(--acc2));color:#06130f}
+.go:disabled{opacity:.4;cursor:not-allowed}
+.msg{min-height:44px;margin-top:10px;font-weight:700}
+.win{color:var(--acc)}.lose{color:var(--bad)}
+.tools{display:flex;gap:8px;margin-bottom:10px}
+.tools input{flex:1;min-width:0;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;color:var(--text)}
+.tools button{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 12px}
+.coin{width:1em;height:1em;vertical-align:-.15em;margin-left:.25em;flex:none}
+[hidden]{display:none!important}
+.tabs{display:flex;gap:6px;margin-bottom:10px}
+.tabs button{flex:1;padding:9px;border-radius:10px;background:var(--bg);border:1px solid var(--line);font-weight:700}
+.tabs button.on{background:var(--acc);color:#06130f;border-color:var(--acc)}
+.sell{width:100%;margin-top:10px;padding:11px;border-radius:10px;background:var(--bg);border:1px solid var(--acc);color:var(--acc);font-weight:700}
+.sell:disabled{opacity:.4;cursor:not-allowed;border-color:var(--line);color:var(--mut)}
+.lock{position:fixed;inset:0;background:#000a;display:none;place-items:center;padding:16px;z-index:9}
+.lock.open{display:grid}
+.modal{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px;width:380px;max-width:100%}
+.modal input{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px;color:var(--text);margin:10px 0}
+.modal .go{margin-top:4px}
+.note{font-size:12px;color:var(--mut);margin-top:10px}
+footer{text-align:center;color:var(--mut);font-size:12px;padding:20px}
+@media(max-width:980px){main{grid-template-columns:1fr}.center{order:-1}}
+@media(prefers-reduced-motion:reduce){.ptr{transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">Skin<span>Up</span></div>
+  <div class="sp"></div>
+  <button class="mute" id="mute" aria-label="Звук включён">🔊</button>
+  <div id="auth"></div>
+</header>
+
+<main>
+  <section class="box">
+    <div class="tabs"><button id="tabInv" class="on">Инвентарь</button><button id="tabShop">Магазин</button></div>
+    <p class="sub" id="invSub">Выберите скины для апгрейда или продажи</p>
+    <div class="tools" id="shopTools" hidden><input id="sq" placeholder="Поиск в магазине" aria-label="Поиск в магазине"><button id="ssort">Цена ↑</button></div>
+    <div class="grid" id="inv"></div>
+    <button class="sell" id="sell" disabled>Продать выбранные</button>
+    <div class="msg" id="smsg" role="status"></div>
+  </section>
+
+  <section class="box center">
+    <h2>Апгрейд</h2>
+    <p class="sub">Чем дороже цель, тем ниже шанс</p>
+    <div class="wheel">
+      <svg viewBox="0 0 300 300" aria-hidden="true">
+        <circle cx="150" cy="150" r="120" fill="none" stroke="#252c45" stroke-width="16"/>
+        <circle id="arc" cx="150" cy="150" r="120" fill="none" stroke="#27e0b3" stroke-width="16" stroke-linecap="butt" transform="rotate(90 150 150)" stroke-dasharray="0 754"/>
+        <g class="ptr" id="ptr"><rect x="148" y="20" width="4" height="26" rx="1" fill="#fff" stroke="#0c0f1a" stroke-width="1"/><polygon points="150,23 141,5 159,5" fill="#fff" stroke="#0c0f1a" stroke-width="1" stroke-linejoin="round"/></g>
+      </svg>
+      <div class="mid"><b id="pct">0%</b><span>шанс</span></div>
+    </div>
+    <div class="quick" role="group" aria-label="Быстрый выбор шанса"><button data-p="35">35%</button><button data-p="50">50%</button><button data-p="75">75%</button></div>
+    <div class="info"><span>Вы ставите</span><b id="stake">0 ₽</b></div>
+    <div class="info"><span>Цель</span><b id="tgt">не выбрана</b></div>
+    <div class="info"><span>Множитель</span><b id="mult">—</b></div>
+    <button class="go" id="go" disabled>Улучшить</button>
+    <div class="msg" id="msg" role="status"></div>
+  </section>
+
+  <section class="box">
+    <h2>Что хотите получить</h2>
+    <p class="sub">Выберите один скин</p>
+    <div class="tools">
+      <input id="q" placeholder="Поиск скина" aria-label="Поиск скина">
+      <button id="sort">Цена ↓</button>
+    </div>
+    <div class="grid" id="tg"></div>
+  </section>
+</main>
+
+<div class="lock" id="lock">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mt">
+    <h2 id="mt">Вход через Steam</h2>
+    <p class="sub">Демо-режим: введите ник, чтобы войти. Настоящая авторизация Steam работает только через сервер — см. инструкцию.</p>
+    <input id="nick" maxlength="20" placeholder="Ваш ник в Steam">
+    <button class="go" id="ok">Войти</button>
+    <button class="lnk note" id="cancel">Отмена</button>
+  </div>
+</div>
+
+<footer>Учебный демо-проект. Виртуальные монеты, никаких реальных денег и скинов.</footer>
+
+<script>
+const $=s=>document.querySelector(s);
+const RC={c:'#7a8bb5',b:'#4b69ff',p:'#8847ff',m:'#d32ce6',r:'#eb4b4b',g:'#e4ae39'};
+const BASE=[
+ ['AK-47 | Redline',900,'m'],['AWP | Asiimov',1500,'r'],['M4A4 | Howl',9000,'g'],['Glock-18 | Fade',2500,'g'],
+ ['USP-S | Kill Confirmed',2200,'r'],['Desert Eagle | Blaze',3200,'g'],['AK-47 | Vulcan',1800,'r'],['M4A1-S | Hyper Beast',1300,'m'],
+ ['P90 | Asiimov',350,'p'],['MP9 | Hot Rod',250,'p'],['SSG 08 | Blood in the Water',420,'m'],['Five-SeveN | Monkey Business',120,'b'],
+ ['FAMAS | Roll Cage',90,'b'],['Nova | Bloomstick',60,'b'],['SG 553 | Pulse',40,'c'],['MAC-10 | Neon Rider',500,'m'],
+ ['Karambit | Doppler',18000,'g'],['AWP | Dragon Lore',32000,'g'],['Butterfly Knife | Fade',24000,'g'],['Sport Gloves | Pandora',15000,'g']
+].map(a=>({name:a[0],price:a[1],c:RC[a[2]]}));
+// Доп. скины: плотная шкала цен (шаг ~6%) от 12 ₽ до ~22 000 ₽, чтобы проценты подбирались точно
+const W=['AK-47','M4A4','M4A1-S','AWP','Glock-18','USP-S','Desert Eagle','P250','Five-SeveN','Tec-9','CZ75-Auto','MP9','MAC-10','MP7','UMP-45','P90','PP-Bizon','FAMAS','Galil AR','SG 553','AUG','SSG 08','Nova','XM1014','MAG-7','Negev','M249','SCAR-20','G3SG1','Dual Berettas','R8 Revolver'];
+const F=['Slate','Elite Build','Neon Rider','Cyrex','Hydroponic','Bunsen Burner','Safari Mesh','Jungle Tiger','Frontside Misty','Emerald','Orbit Mk01','Phantom Disruptor','Torque','Ocean Foam','Night Riot','Candy Apple','Fire Serpent','Blue Laminate','Case Hardened','Hot Rod','Crimson Web','Urban Hazard'];
+const GEN=Array.from({length:130},(_,i)=>{
+  let p=12*Math.pow(1.06,i)*(0.97+((i*37)%7)/100);
+  p=p>1000?Math.round(p/50)*50:p>100?Math.round(p/10)*10:Math.round(p);
+  return {name:W[i%31]+' | '+F[i%22],price:p,c:p<100?RC.c:p<300?RC.b:p<1000?RC.p:p<3000?RC.m:p<10000?RC.r:RC.g};
+});
+const CATALOG=[...BASE,...GEN].sort((a,b)=>a.price-b.price).map((x,i)=>({id:i,...x}));
+const pick=(a,b,n)=>CATALOG.filter(x=>x.price>=a&&x.price<=b).sort(()=>Math.random()-.5).slice(0,n);
+
+let S={user:null,bal:1000,inv:[],sel:new Set(),target:null,sortDesc:true,busy:false,uid:100};
+const COIN='<svg class="coin" viewBox="0 0 16 16" role="img" aria-label="монет"><circle cx="8" cy="8" r="7.2" fill="#f4b223" stroke="#a56a08" stroke-width="1.2"/><circle cx="8" cy="8" r="4.9" fill="#f9c845" stroke="#ffe08a" stroke-width="1"/><path d="M8 5l.9 2 2.1.2-1.6 1.4.5 2.1L8 9.6l-1.9 1.1.5-2.1L5 7.2l2.1-.2z" fill="#a56a08"/><path d="M3.5 6.3A5 5 0 0 1 6.8 3.4" stroke="#fff" stroke-opacity=".55" stroke-width="1" fill="none" stroke-linecap="round"/></svg>';
+const rub=n=>n.toLocaleString('ru-RU')+COIN;
+const mk=(it,uid)=>({uid:uid??++S.uid,...it});
+
+function save(){try{localStorage.setItem('skinup',JSON.stringify({user:S.user,bal:S.bal,inv:S.inv,uid:S.uid}))}catch(e){}}
+function load(){try{const d=JSON.parse(localStorage.getItem('skinup')||'null');if(d){Object.assign(S,d)}}catch(e){}}
+
+function renderAuth(){
+  const a=$('#auth');
+  if(!S.user){a.innerHTML='<button class="steam" id="login">Войти через Steam</button>';$('#login').onclick=openLogin;return}
+  a.innerHTML=`<div class="user"><span class="bal">Баланс: <b>${rub(S.bal)}</b></span><div class="ava">${S.user[0].toUpperCase()}</div><span>${S.user}</span><button class="lnk" id="out">Выйти</button></div>`;
+  $('#out').onclick=()=>{S.user=null;S.inv=[];S.sel.clear();save();renderAll()};
+}
+function card(it,on,fn){
+  const b=document.createElement('button');b.className='sk'+(on?' on':'');b.style.setProperty('--c',it.c);
+  b.innerHTML=`<i></i><small>${it.name}</small><b>${rub(it.price)}</b>`;b.onclick=fn;return b;
+}
+function renderInv(){
+  const g=$('#inv'),st=g.scrollTop;g.innerHTML='';
+  $('#tabInv').classList.toggle('on',S.tab==='inv');$('#tabShop').classList.toggle('on',S.tab==='shop');
+  $('#shopTools').hidden=S.tab!=='shop';$('#sell').hidden=S.tab!=='inv';
+  $('#invSub').textContent=S.tab==='shop'?'Нажмите на скин, чтобы купить его':'Выберите скины для апгрейда или продажи';
+  const sv=stake();$('#sell').disabled=!sv||S.busy;$('#sell').innerHTML=sv?'Продать выбранные за '+rub(sv):'Продать выбранные';
+  if(S.tab==='shop'){renderShop(g);g.scrollTop=st;return}
+  if(!S.user){g.innerHTML='<div class="empty">Войдите через Steam, чтобы увидеть инвентарь</div>';return}
+  if(!S.inv.length){g.innerHTML='<div class="empty">Инвентарь пуст. Купите скины во вкладке «Магазин»</div>';return}
+  S.inv.forEach(it=>g.append(card(it,S.sel.has(it.uid),()=>{if(S.busy)return;S.sel.has(it.uid)?S.sel.delete(it.uid):S.sel.add(it.uid);renderAll()})));
+}
+function renderTg(){
+  const g=$('#tg'),q=$('#q').value.toLowerCase();g.innerHTML='';
+  CATALOG.filter(i=>i.name.toLowerCase().includes(q)).sort((a,b)=>S.sortDesc?b.price-a.price:a.price-b.price)
+   .forEach(it=>{const low=stake()>0&&it.price<=stake();const c=card(it,S.target&&S.target.id===it.id,()=>{if(S.busy)return;S.target=it;renderAll()});if(low){c.disabled=true;c.style.opacity='.35';c.style.cursor='not-allowed';c.title='Цель должна быть дороже вашей ставки'}g.append(c)});
+  if(!g.children.length)g.innerHTML='<div class="empty">Ничего не найдено</div>';
+}
+const stake=()=>S.inv.filter(i=>S.sel.has(i.uid)).reduce((s,i)=>s+i.price,0);
+const MAXP=80;
+const chance=()=>{const s=stake();if(!s||!S.target||S.target.price<=s)return 0;return Math.min(MAXP,Math.max(1,s/S.target.price*95))};
+function renderWheel(){
+  const c=chance(),C=2*Math.PI*120;
+  $('#arc').setAttribute('stroke-dasharray',`${C*c/100} ${C}`);
+  $('#arc').setAttribute('transform',`rotate(${90-c*1.8} 150 150)`);
+  const hue=c<=50?c/50*60:60+(c-50)/30*60,col=`hsl(${hue.toFixed(0)} 85% 55%)`;
+  $('#arc').setAttribute('stroke',col);$('#arc').style.opacity=c?1:0;$('#pct').style.color=c?col:'';
+  $('#pct').textContent=c.toFixed(c<10?2:1)+'%';
+  $('#stake').innerHTML=rub(stake());
+  $('#tgt').textContent=S.target?S.target.name:'не выбрана';
+  $('#mult').textContent=S.target&&stake()?'x'+(S.target.price/stake()).toFixed(2):'—';
+  $('#go').disabled=!(S.user&&c>0)||S.busy;
+}
+function renderAll(){if(S.target&&stake()>0&&S.target.price<=stake())S.target=null;renderAuth();renderInv();renderTg();renderWheel()}
+function addTopup(){
+  if(!S.user||$('#topup'))return;
+  const b=document.createElement('button');b.id='topup';b.className='tools';b.style.cssText='background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin-top:10px;width:100%;justify-content:center';
+  b.textContent='Пополнить демо-скинами';
+  b.onclick=()=>{pick(30,2000,5).forEach(x=>S.inv.push(mk(x)));save();renderAll()};
+  $('#inv').after(b);
+}
+$('#q').oninput=renderTg;
+$('#sort').onclick=()=>{S.sortDesc=!S.sortDesc;$('#sort').textContent='Цена '+(S.sortDesc?'↓':'↑');renderTg()};
+
+document.querySelectorAll('.quick button').forEach(b=>b.onclick=()=>{
+  if(S.busy)return;const p=+b.dataset.p,m=$('#msg');
+  if(!S.user){m.innerHTML='<span class="lose">Сначала войдите через Steam</span>';return}
+  if(!S.sel.size&&S.target){
+    // подбираем скины из инвентаря под нужный шанс
+    const need=S.target.price*p/95,inv=S.inv.slice().sort((a,b)=>b.price-a.price);
+    if(!inv.length){m.innerHTML='<span class="lose">Инвентарь пуст</span>';return}
+    let best=[],bd=Infinity;
+    if(inv.length<=14){
+      for(let mask=1;mask<(1<<inv.length);mask++){let s=0;for(let i=0;i<inv.length;i++)if(mask&(1<<i))s+=inv[i].price;if(s>=S.target.price)continue;const d=Math.abs(s-need);if(d<bd){bd=d;best=mask}}
+      S.sel=new Set(inv.filter((_,i)=>best&(1<<i)).map(x=>x.uid));
+    }else{let s=0;S.sel=new Set();for(const it of inv){if(s+it.price<=need*1.1){S.sel.add(it.uid);s+=it.price}}}
+    if(!S.sel.size)S.sel.add(inv[inv.length-1].uid);
+  }else if(S.sel.size){
+    // цель подбираем под выбранные скины
+    const need=stake()*95/p;
+    const pool=CATALOG.filter(x=>x.price>stake()).sort((a,b)=>Math.abs(a.price-need)-Math.abs(b.price-need));
+    if(!pool.length){m.innerHTML='<span class="lose">Нет скинов дороже вашей ставки</span>';return}
+    S.target=pool[0];
+  }else{m.innerHTML='<span class="lose">Выберите цель или скины, затем нажмите шанс</span>';return}
+  m.innerHTML=`<span class="win">Подобрано: шанс ≈ ${chance().toFixed(1)}%</span>`;
+  renderAll();
+});
+/* ===== Звуки (синтез через Web Audio, файлы не нужны) ===== */
+S.snd=true;S.tab='inv';S.shopDesc=false;let AC=null;
+function ac(){if(!S.snd)return null;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();return AC}catch(e){return null}}
+function tone(f,d,type='sine',v=.12,delay=0,f2){const a=ac();if(!a)return;const t=a.currentTime+delay,o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+d);g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+d+.02)}
+const snd={click:()=>tone(520,.07,'triangle',.08,0,780),tick:()=>tone(900,.03,'square',.04),win:()=>[523,659,784,1047].forEach((f,i)=>tone(f,.4,'triangle',.14,i*.11)),lose:()=>{tone(300,.55,'sawtooth',.09,0,110);tone(200,.6,'square',.05,.15,70)}};
+function spinSound(){const N=60;for(let k=1;k<=N;k++)setTimeout(snd.tick,4000*(1-Math.pow(1-k/N,1/3)))}
+document.addEventListener('click',e=>{if(e.target.closest('button'))snd.click()});
+$('#mute').onclick=()=>{S.snd=!S.snd;$('#mute').textContent=S.snd?'🔊':'🔇';$('#mute').setAttribute('aria-label',S.snd?'Звук включён':'Звук выключен')};
+$('#go').onclick=()=>{
+  if(S.busy)return;const c=chance();if(!c)return;
+  S.busy=true;$('#go').disabled=true;$('#msg').textContent='';
+  const roll=Math.random()*100,win=Math.abs(roll-50)<c/2;
+  const ptr=$('#ptr'),angle=360*5+(roll-50)*3.6;
+  ptr.style.transition='none';ptr.style.transform='rotate(180deg)';ptr.getBoundingClientRect();spinSound();
+  ptr.style.transition='transform 4s cubic-bezier(.12,.6,.1,1)';ptr.style.transform=`rotate(${180+angle}deg)`;
+  setTimeout(()=>{
+    const gone=S.sel;S.inv=S.inv.filter(i=>!gone.has(i.uid));
+    if(win){snd.win();S.inv.push(mk(S.target));$('#msg').innerHTML=`<span class="win">Успех! Вы получили ${S.target.name}</span>`}
+    else{snd.lose();$('#msg').innerHTML='<span class="lose">Не повезло: выбранные скины сгорели. Попробуйте ещё раз</span>'}
+    S.sel=new Set();S.busy=false;save();renderAll();
+  },4200);
+};
+
+function openLogin(){$('#lock').classList.add('open');$('#nick').focus()}
+function closeLogin(){$('#lock').classList.remove('open')}
+$('#cancel').onclick=closeLogin;
+$('#ok').onclick=()=>{
+  const n=$('#nick').value.trim();if(!n){$('#nick').focus();return}
+  /* НАСТОЯЩИЙ ВХОД: вместо этого редирект на ваш сервер, который шлёт пользователя на
+     https://steamcommunity.com/openid/login (OpenID 2.0), проверяет ответ и выдаёт сессию. */
+  S.user=n;S.bal=1000;S.inv=[];S.sel=new Set();
+  save();closeLogin();renderAll();
+};
+$('#nick').onkeydown=e=>{if(e.key==='Enter')$('#ok').click();if(e.key==='Escape')closeLogin()};
+/* ===== Магазин и продажа ===== */
+function renderShop(g){
+  if(!S.user){g.innerHTML='<div class="empty">Войдите через Steam, чтобы покупать скины</div>';return}
+  const q=$('#sq').value.toLowerCase();
+  CATALOG.filter(i=>i.name.toLowerCase().includes(q)).sort((a,b)=>S.shopDesc?b.price-a.price:a.price-b.price).forEach(it=>{
+    const c=card(it,false,()=>buy(it));
+    if(it.price>S.bal){c.style.opacity='.4';c.title='Не хватает '+(it.price-S.bal).toLocaleString('ru-RU')+' монет'}
+    g.append(c);
+  });
+  if(!g.children.length)g.innerHTML='<div class="empty">Ничего не найдено</div>';
+}
+function buy(it){
+  if(S.busy)return;const m=$('#smsg');
+  if(it.price>S.bal){m.innerHTML=`<span class="lose">Не хватает ${rub(it.price-S.bal)} для покупки</span>`;return}
+  S.bal-=it.price;S.inv.push(mk(it));save();
+  m.innerHTML=`<span class="win">Куплено: ${it.name} за ${rub(it.price)}</span>`;renderAll();
+}
+$('#sell').onclick=()=>{
+  if(S.busy)return;const v=stake();if(!v)return;const n=S.sel.size;
+  S.inv=S.inv.filter(i=>!S.sel.has(i.uid));S.bal+=v;S.sel=new Set();save();
+  $('#smsg').innerHTML=`<span class="win">Продано: ${n} шт. за ${rub(v)}</span>`;renderAll();
+};
+$('#tabInv').onclick=()=>{S.tab='inv';$('#smsg').textContent='';renderInv()};
+$('#tabShop').onclick=()=>{S.tab='shop';$('#smsg').textContent='';renderInv()};
+$('#sq').oninput=renderInv;
+$('#ssort').onclick=()=>{S.shopDesc=!S.shopDesc;$('#ssort').textContent='Цена '+(S.shopDesc?'↓':'↑');renderInv()};
+load();renderAll();
+</script>
+</body>
+</html>
