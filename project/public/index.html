@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UPGRADER — CS2 Skin Upgrader</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+
+  <!-- Particle Canvas -->
+  <canvas id="particle-canvas"></canvas>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-left">
+      <a href="/" class="nav-logo">
+        <img src="/img/logo.svg" alt="UPGRADER" class="logo-img">
+      </a>
+      <div class="nav-links">
+        <a href="/" class="nav-link active">Upgrader</a>
+      </div>
+    </div>
+    <div class="nav-right">
+      <div class="nav-balance" id="nav-balance" style="display:none;">
+        <span class="balance-label">Inventory Value</span>
+        <span class="balance-amount" id="balance-amount">$0.00</span>
+      </div>
+      <div id="auth-area">
+        <a href="/auth/steam" class="btn-steam" id="btn-login">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12c0 4.86 3.48 8.9 8.08 9.8l3.24-4.62c-.12-.02-.24-.02-.36-.02-2.21 0-4-1.79-4-4s1.79-4 4-4c.74 0 1.43.2 2.02.55l3.59-2.07C17.18 4.41 14.79 2 12 2zm4.2 7.8a3.2 3.2 0 1 1 0 6.4 3.2 3.2 0 0 1 0-6.4z"/></svg>
+          Sign in with Steam
+        </a>
+        <div class="user-info" id="user-info" style="display:none;">
+          <img id="user-avatar" class="user-avatar" src="" alt="Avatar">
+          <span id="user-name" class="user-name"></span>
+          <a href="/auth/logout" class="btn-logout" id="btn-logout">Logout</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <h1 class="hero-title">
+        <span class="hero-title-line">UPGRADE YOUR</span>
+        <span class="hero-title-accent">CS2 SKINS</span>
+      </h1>
+      <p class="hero-subtitle">Select your skins, pick a target, and try your luck. Higher value targets = lower chance.</p>
+    </div>
+    <div class="hero-particles">
+      <div class="hero-particle"></div>
+      <div class="hero-particle"></div>
+      <div class="hero-particle"></div>
+      <div class="hero-particle"></div>
+      <div class="hero-particle"></div>
+      <div class="hero-particle"></div>
+    </div>
+  </section>
+
+  <!-- Main Upgrader Interface -->
+  <main class="upgrader-main">
+    <!-- Left Panel: Your Items -->
+    <section class="panel panel-inventory">
+      <div class="panel-header">
+        <h2 class="panel-title">
+          <span class="panel-icon">🎒</span>
+          Your Items
+        </h2>
+        <span class="item-count" id="inventory-count">0 items</span>
+      </div>
+      <div class="panel-search">
+        <input type="text" class="search-input" id="inventory-search" placeholder="Search your inventory...">
+      </div>
+      <div class="panel-body" id="inventory-grid">
+        <div class="panel-empty" id="inventory-empty">
+          <div class="empty-icon">🔒</div>
+          <p>Sign in with Steam to load your inventory</p>
+        </div>
+        <!-- Items will be loaded here -->
+      </div>
+    </section>
+
+    <!-- Center Panel: Upgrade Zone -->
+    <section class="panel panel-upgrade">
+      <div class="upgrade-zone">
+        <!-- Selected Items Display -->
+        <div class="selected-items-area">
+          <div class="selected-header">
+            <h3>Selected Items</h3>
+            <button class="btn-clear" id="btn-clear-selected" style="display:none;">Clear All</button>
+          </div>
+          <div class="selected-items-list" id="selected-items-list">
+            <div class="selected-empty">
+              <p>Click items from your inventory to add them</p>
+            </div>
+          </div>
+          <div class="selected-total" id="selected-total" style="display:none;">
+            <span>Total Value:</span>
+            <span class="total-value" id="total-value">$0.00</span>
+          </div>
+        </div>
+
+        <!-- Upgrade Spinner / Chance Display -->
+        <div class="upgrade-spinner-area">
+          <div class="spinner-container" id="spinner-container">
+            <!-- Outer ring -->
+            <div class="spinner-ring">
+              <svg viewBox="0 0 300 300" class="spinner-svg" id="spinner-svg">
+                <defs>
+                  <linearGradient id="winGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#00ff88"/>
+                    <stop offset="100%" style="stop-color:#00d4ff"/>
+                  </linearGradient>
+                  <linearGradient id="loseGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#ff4444"/>
+                    <stop offset="100%" style="stop-color:#ff6b35"/>
+                  </linearGradient>
+                  <filter id="spinnerGlow">
+                    <feGaussianBlur stdDeviation="3" result="blur"/>
+                    <feMerge>
+                      <feMergeNode in="blur"/>
+                      <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                  </filter>
+                </defs>
+                <!-- Background circle -->
+                <circle cx="150" cy="150" r="140" fill="none" stroke="#1a1a3e" stroke-width="8"/>
+                <!-- Win sector arc -->
+                <circle cx="150" cy="150" r="140" fill="none" stroke="url(#winGrad)" stroke-width="8"
+                  stroke-dasharray="0 879.6" stroke-dashoffset="0" id="win-arc" filter="url(#spinnerGlow)"
+                  stroke-linecap="round" transform="rotate(-90 150 150)"/>
+                <!-- Lose sector arc -->
+                <circle cx="150" cy="150" r="140" fill="none" stroke="url(#loseGrad)" stroke-width="8"
+                  stroke-dasharray="0 879.6" id="lose-arc"
+                  stroke-linecap="round" transform="rotate(-90 150 150)"/>
+                <!-- Tick marks -->
+                <g id="spinner-ticks"></g>
+                <!-- Pointer -->
+                <polygon points="150,15 143,30 157,30" fill="#fff" filter="url(#spinnerGlow)" id="spinner-pointer"/>
+              </svg>
+              <!-- Spinning needle overlay -->
+              <div class="spinner-needle" id="spinner-needle" style="display:none;">
+                <div class="needle-line"></div>
+              </div>
+            </div>
+            <!-- Center content -->
+            <div class="spinner-center">
+              <div class="chance-display">
+                <span class="chance-label">CHANCE</span>
+                <span class="chance-value" id="chance-value">0.00</span>
+                <span class="chance-percent">%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- VS Badge -->
+          <div class="vs-badge">VS</div>
+        </div>
+
+        <!-- Target Item Display -->
+        <div class="target-item-area">
+          <div class="target-header">
+            <h3>Target Skin</h3>
+          </div>
+          <div class="target-item-display" id="target-item-display">
+            <div class="target-empty">
+              <div class="target-empty-icon">🎯</div>
+              <p>Select a target skin from the shop</p>
+            </div>
+          </div>
+          <div class="target-value" id="target-value-display" style="display:none;">
+            <span>Target Value:</span>
+            <span class="total-value" id="target-value">$0.00</span>
+          </div>
+        </div>
+
+        <!-- Upgrade Button -->
+        <button class="btn-upgrade" id="btn-upgrade" disabled>
+          <span class="btn-upgrade-text">UPGRADE</span>
+          <span class="btn-upgrade-glow"></span>
+        </button>
+
+        <!-- Result Overlay -->
+        <div class="result-overlay" id="result-overlay" style="display:none;">
+          <div class="result-content" id="result-content">
+            <div class="result-icon" id="result-icon"></div>
+            <h2 class="result-title" id="result-title"></h2>
+            <p class="result-message" id="result-message"></p>
+            <div class="result-item" id="result-item" style="display:none;"></div>
+            <button class="btn-result-close" id="btn-result-close">Continue</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Panel: Shop / Target Items -->
+    <section class="panel panel-shop">
+      <div class="panel-header">
+        <h2 class="panel-title">
+          <span class="panel-icon">🏪</span>
+          Target Skins
+        </h2>
+        <span class="item-count" id="shop-count">0 items</span>
+      </div>
+      <div class="panel-search">
+        <input type="text" class="search-input" id="shop-search" placeholder="Search target skins...">
+      </div>
+      <div class="panel-filters">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="covert">Covert</button>
+        <button class="filter-btn" data-filter="classified">Classified</button>
+        <button class="filter-btn" data-filter="restricted">Restricted</button>
+        <button class="filter-btn" data-filter="mil-spec">Mil-Spec</button>
+      </div>
+      <div class="panel-body" id="shop-grid">
+        <div class="panel-loading" id="shop-loading">
+          <div class="loading-spinner"></div>
+          <p>Loading shop items...</p>
+        </div>
+        <!-- Shop items will be loaded here -->
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <img src="/img/logo.svg" alt="UPGRADER" class="footer-logo">
+          <p class="footer-desc">The premier CS2 skin upgrade platform. Try your luck and upgrade your inventory.</p>
+        </div>
+        <div class="footer-links">
+          <h4>Legal</h4>
+          <a href="#">Terms of Service</a>
+          <a href="#">Privacy Policy</a>
+          <a href="#">Provably Fair</a>
+        </div>
+        <div class="footer-links">
+          <h4>Support</h4>
+          <a href="#">FAQ</a>
+          <a href="#">Contact Us</a>
+          <a href="#">Discord</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 UPGRADER. All rights reserved. This site is not affiliated with Valve Corporation.</p>
+        <p class="footer-disclaimer">⚠️ Skin upgrading involves risk. You may lose your items. Please gamble responsibly. 18+ only.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>
